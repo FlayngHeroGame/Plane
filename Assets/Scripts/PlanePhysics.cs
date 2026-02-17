@@ -27,7 +27,7 @@ public class PlanePhysics : MonoBehaviour
 
         if (forwardSpeed > 0)
         {
-            Vector3 liftForce = transform.up * forwardSpeed * lift;
+            Vector3 liftForce = transform.up * forwardSpeed * lift * UpgradeSystem.Instance.LiftBonus;
             rb.AddForce(liftForce, ForceMode.Acceleration);
         }
 
