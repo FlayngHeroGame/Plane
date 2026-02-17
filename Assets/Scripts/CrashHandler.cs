@@ -5,23 +5,24 @@ public class CrashHandler : MonoBehaviour
 {
     public GameObject explosion;
     bool crashed = false;
+    float crashTime;
 
     void OnCollisionEnter(Collision col)
     {
         if (crashed) return;
         
         crashed = true;
+        crashTime = Time.unscaledTime;
         Instantiate(explosion, transform.position, Quaternion.identity);
         Time.timeScale = 0f;
-        
-        // Перезагрузка сцены через 3 секунды (unscaled time)
-        Invoke(nameof(RestartScene), 3f);
     }
 
     void Update()
     {
-        // Возможность ручного перезапуска после краша
-        if (crashed && Input.anyKeyDown)
+        if (!crashed) return;
+
+        // Перезагрузка сцены через 3 секунды (unscaled time) или при нажатии любой клавиши
+        if (Input.anyKeyDown || (Time.unscaledTime - crashTime >= 3f))
         {
             RestartScene();
         }
@@ -33,3 +34,4 @@ public class CrashHandler : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
+
