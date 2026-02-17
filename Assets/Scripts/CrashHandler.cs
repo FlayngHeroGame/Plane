@@ -11,13 +11,13 @@ public class CrashHandler : MonoBehaviour
 
     Rigidbody rb;
     bool crashed = false;
+    float crashTime;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
     }
-    bool crashed = false;
-    float crashTime;
+
 
     void OnCollisionEnter(Collision col)
     {
