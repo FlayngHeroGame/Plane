@@ -4,58 +4,56 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlaneLaunch : MonoBehaviour
 {
-    public Transform slingOrigin;   // точка крепления рогатки
+    public Transform slingOrigin;   // РўРѕС‡РєР° РєСЂРµРїР»РµРЅРёСЏ СЂРѕРіР°С‚РєРё
     public float launchPower = 20f;
 
     Rigidbody rb;
 
-    bool isDragging = false;
-    bool launched = false;
+    enum LaunchState { Ready, Pulling, Flying }
+    LaunchState state = LaunchState.Ready;
 
-    public float maxAngle = 45f; // максимум отклонения в градусах
-    public float minPull = 2f;   // минимальная сила
-    public float maxPull = 10f;  // максимальная сила
+    public float maxAngle = 45f; // РџРѕР»РѕРІРёРЅР° РґРѕРїСѓСЃС‚РёРјРѕРіРѕ РєРѕРЅСѓСЃР° РІ РіСЂР°РґСѓСЃР°С…
+    public float minPull = 2f;   // РњРёРЅРёРјР°Р»СЊРЅР°СЏ С‚СЏРіР°
+    public float maxPull = 10f;  // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ С‚СЏРіР°
 
     Vector3 pullVector;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true; // пока не запущен
+        rb.isKinematic = true; // РџРѕРєР° РЅРµ Р·Р°РїСѓС‰РµРЅ
     }
 
     void Update()
     {
-        if (!isDragging && rb.isKinematic)
-        {
-            if (Input.GetMouseButtonDown(0))
-                isDragging = true;
-        }
-
-#if UNITY_EDITOR
-        if (Input.GetMouseButtonDown(0)) StartDrag();
-        if (Input.GetMouseButton(0)) Drag(Input.mousePosition);
-        if (Input.GetMouseButtonUp(0)) Release();
-#else
+        // РЈРЅРёРІРµСЂСЃР°Р»СЊРЅР°СЏ РѕР±СЂР°Р±РѕС‚РєР° РІРІРѕРґР° РґР»СЏ РјРѕР±РёР»СЊРЅС‹С… Рё РґРµСЃРєС‚РѕРїР°
+        // РџСЂРёРѕСЂРёС‚РµС‚ С‚Р°С‡Сѓ, РµСЃР»Рё РµСЃС‚СЊ Р°РєС‚РёРІРЅС‹Рµ РєР°СЃР°РЅРёСЏ
         if (Input.touchCount > 0)
         {
             var t = Input.GetTouch(0);
-
+            
             if (t.phase == TouchPhase.Began) StartDrag();
             if (t.phase == TouchPhase.Moved) Drag(t.position);
             if (t.phase == TouchPhase.Ended) Release();
         }
-#endif
+        else
+        {
+            // Fallback РЅР° РјС‹С€СЊ РґР»СЏ РґРµСЃРєС‚РѕРїР° РёР»Рё РєРѕРіРґР° РЅРµС‚ РєР°СЃР°РЅРёР№
+            if (Input.GetMouseButtonDown(0)) StartDrag();
+            if (Input.GetMouseButton(0)) Drag(Input.mousePosition);
+            if (Input.GetMouseButtonUp(0)) Release();
+        }
     }
 
     void StartDrag()
     {
-        isDragging = true;
+        if (state != LaunchState.Ready) return;
+        state = LaunchState.Pulling;
     }
 
     void Drag(Vector2 screenPos)
     {
-        if (!isDragging) return;
+        if (state != LaunchState.Pulling) return;
 
         Ray ray = Camera.main.ScreenPointToRay(screenPos);
         Plane plane = new Plane(Vector3.up, slingOrigin.position);
@@ -64,71 +62,49 @@ public class PlaneLaunch : MonoBehaviour
         {
             Vector3 point = ray.GetPoint(dist);
 
-            /*pullVector = slingOrigin.position - point;
-            pullVector = Vector3.ClampMagnitude(pullVector, maxPull);
-
-            transform.position = slingOrigin.position - pullVector;
-            transform.forward = pullVector.normalized;*/
             pullVector = slingOrigin.position - point;
 
-            // сначала ограничиваем длину
+            // РћРіСЂР°РЅРёС‡РµРЅРёРµ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ СЃРёР»С‹
             pullVector = Vector3.ClampMagnitude(pullVector, maxPull);
 
-            // затем ограничиваем угол
+            // РћРіСЂР°РЅРёС‡РµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ СѓРіР»РѕРј
             pullVector = ClampDirection(pullVector.normalized) * pullVector.magnitude;
-
-            float pullLength = pullVector.magnitude;
-
-            // ограничиваем максимум
-            pullLength = Mathf.Min(pullLength, maxPull);
-
-            // пересобираем вектор
-            pullVector = pullVector.normalized * pullLength;
-
 
             transform.position = slingOrigin.position - pullVector;
             transform.forward = pullVector.normalized;
-
         }
-
-
     }
 
     void Release()
     {
-        if (!isDragging) return;
-
-        isDragging = false;
-        launched = true;
+        if (state != LaunchState.Pulling) return;
 
         float pullLength = pullVector.magnitude;
 
-        // если натянули слишком слабо — отменяем выстрел
+        // Р•СЃР»Рё РЅР°С‚СЏР¶РµРЅРёРµ СЃР»РёС€РєРѕРј СЃР»Р°Р±РѕРµ, РІРѕР·РІСЂР°С‚ РІ РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
         if (pullLength < minPull)
         {
             ResetToStart();
-
             transform.position = slingOrigin.position;
             pullVector = Vector3.zero;
             return;
         }
 
+        // РџРµСЂРµС…РѕРґ РІ СЃРѕСЃС‚РѕСЏРЅРёРµ РїРѕР»С‘С‚Р° С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕР№ РїСЂРѕРІРµСЂРєРё
+        state = LaunchState.Flying;
+
         float normalized = Mathf.InverseLerp(minPull, maxPull, pullLength);
-        float force = launchPower * normalized;
+        float force = launchPower * normalized * UpgradeSystem.Instance.SlingPower;
 
         rb.isKinematic = false;
-        //rb.AddForce(pullVector * launchPower, ForceMode.Impulse);
         rb.AddForce(pullVector.normalized * force, ForceMode.Impulse);
 
         FindObjectOfType<SlingshotVisual>().OnLaunch();
-
-
-
     }
 
     Vector3 ClampDirection(Vector3 dir)
     {
-        Vector3 baseDir = slingOrigin.forward; // вперед от рогатки
+        Vector3 baseDir = -slingOrigin.forward; // Р’РµРєС‚РѕСЂ РЅР°Р·Р°Рґ РѕС‚ СЂРѕРіР°С‚РєРё (РёРЅРІРµСЂС‚РёСЂРѕРІР°РЅ)
 
         float angle = Vector3.Angle(baseDir, dir);
 
@@ -151,8 +127,6 @@ public class PlaneLaunch : MonoBehaviour
 
         rb.isKinematic = true;
 
-        isDragging = false;
+        state = LaunchState.Ready;
     }
-
-
 }

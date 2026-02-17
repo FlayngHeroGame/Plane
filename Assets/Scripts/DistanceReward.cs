@@ -10,6 +10,6 @@ public class DistanceReward : MonoBehaviour
     void Update()
     {
         distance = Vector3.Distance(startPoint.position, transform.position);
-        coins = Mathf.FloorToInt(distance / 5f);
+        coins = Mathf.FloorToInt(distance / 5f * UpgradeSystem.Instance.MoneyMultiplier);
     }
 }
