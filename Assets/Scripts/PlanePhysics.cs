@@ -32,10 +32,10 @@ public class PlanePhysics : MonoBehaviour
         }
 
         // ������ ������� �� ����������� ��������
-        transform.rotation =
+        rb.MoveRotation(
             Quaternion.Lerp(
                 transform.rotation,
                 Quaternion.LookRotation(v),
-                Time.fixedDeltaTime * 2f);
+                Time.fixedDeltaTime * 2f));
     }
 }
