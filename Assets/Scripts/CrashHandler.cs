@@ -21,8 +21,8 @@ public class CrashHandler : MonoBehaviour
     {
         if (!crashed) return;
 
-        // Перезагрузка сцены через 3 секунды (unscaled time) или при нажатии любой клавиши
-        if (Input.anyKeyDown || (Time.unscaledTime - crashTime >= 3f))
+        // Перезагрузка сцены через 3 секунды (unscaled time) или при нажатии пробела/ЛКМ
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || (Time.unscaledTime - crashTime >= 3f))
         {
             RestartScene();
         }

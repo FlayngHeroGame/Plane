@@ -27,7 +27,8 @@ public class PlaneLaunch : MonoBehaviour
     void Update()
     {
         // Универсальная обработка ввода для мобильных и десктопа
-        if (Input.touchSupported && Input.touchCount > 0)
+        // Приоритет тачу, если есть активные касания
+        if (Input.touchCount > 0)
         {
             var t = Input.GetTouch(0);
             
@@ -37,7 +38,7 @@ public class PlaneLaunch : MonoBehaviour
         }
         else
         {
-            // Fallback на мышь для десктопа
+            // Fallback на мышь для десктопа или когда нет касаний
             if (Input.GetMouseButtonDown(0)) StartDrag();
             if (Input.GetMouseButton(0)) Drag(Input.mousePosition);
             if (Input.GetMouseButtonUp(0)) Release();
