@@ -44,7 +44,7 @@ public class CrashHandler : MonoBehaviour
         yield return new WaitForSeconds(markerSpawnDelay);
 
         // Спавним дистанционный столб
-        Vector3 markerPos = transform.position + Vector3.forward * markerOffsetForward;
+        Vector3 markerPos = transform.position + transform.forward * markerOffsetForward;
         if (distanceMarkerPrefab != null)
         {
             Instantiate(distanceMarkerPrefab, markerPos, Quaternion.identity);

@@ -15,7 +15,7 @@ public class FlightJoystick : MonoBehaviour, IPointerDownHandler, IDragHandler, 
     public void EnableJoystick()
     {
         isActive = true;
-        if (background != null) background.gameObject.SetActive(false); // скрыт, пока не коснулись
+        if (background != null) background.gameObject.SetActive(false); // Скрыт до первого касания
     }
 
     public void DisableJoystick()
