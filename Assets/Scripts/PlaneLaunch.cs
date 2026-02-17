@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlaneLaunch : MonoBehaviour
 {
-    public Transform slingOrigin;   // точка крепления рогатки
+    public Transform slingOrigin;   // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     public float launchPower = 20f;
 
     Rigidbody rb;
@@ -12,16 +12,16 @@ public class PlaneLaunch : MonoBehaviour
     bool isDragging = false;
     bool launched = false;
 
-    public float maxAngle = 45f; // максимум отклонения в градусах
-    public float minPull = 2f;   // минимальная сила
-    public float maxPull = 10f;  // максимальная сила
+    public float maxAngle = 45f; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    public float minPull = 2f;   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+    public float maxPull = 10f;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
     Vector3 pullVector;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true; // пока не запущен
+        rb.isKinematic = true; // пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     }
 
     void Update()
@@ -71,18 +71,18 @@ public class PlaneLaunch : MonoBehaviour
             transform.forward = pullVector.normalized;*/
             pullVector = slingOrigin.position - point;
 
-            // сначала ограничиваем длину
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             pullVector = Vector3.ClampMagnitude(pullVector, maxPull);
 
-            // затем ограничиваем угол
+            // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
             pullVector = ClampDirection(pullVector.normalized) * pullVector.magnitude;
 
             float pullLength = pullVector.magnitude;
 
-            // ограничиваем максимум
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             pullLength = Mathf.Min(pullLength, maxPull);
 
-            // пересобираем вектор
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             pullVector = pullVector.normalized * pullLength;
 
 
@@ -103,7 +103,7 @@ public class PlaneLaunch : MonoBehaviour
 
         float pullLength = pullVector.magnitude;
 
-        // если натянули слишком слабо — отменяем выстрел
+        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         if (pullLength < minPull)
         {
             ResetToStart();
@@ -122,13 +122,19 @@ public class PlaneLaunch : MonoBehaviour
 
         FindObjectOfType<SlingshotVisual>().OnLaunch();
 
+        // Р’РєР»СЋС‡РёС‚СЊ РєР°РјРµСЂСѓ СЃР»РµРґРѕРІР°РЅРёСЏ
+        var cam = FindObjectOfType<FollowCamera>();
+        if (cam != null) cam.StartFollowing();
 
+        // Р’РєР»СЋС‡РёС‚СЊ СѓРїСЂР°РІР»РµРЅРёРµ РІ РїРѕР»С‘С‚Рµ
+        var fc = FindObjectOfType<FlightControl>();
+        if (fc != null) fc.EnableControl();
 
     }
 
     Vector3 ClampDirection(Vector3 dir)
     {
-        Vector3 baseDir = slingOrigin.forward; // вперед от рогатки
+        Vector3 baseDir = slingOrigin.forward; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
         float angle = Vector3.Angle(baseDir, dir);
 
