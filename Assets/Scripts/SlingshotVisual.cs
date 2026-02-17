@@ -5,7 +5,7 @@ public class SlingshotVisual : MonoBehaviour
 {
     public Transform leftAnchor;
     public Transform rightAnchor;
-    public Transform projectile;   // самолёт
+    public Transform projectile;   // пїЅпїЅпїЅпїЅпїЅпїЅ
 
     LineRenderer lr;
 
@@ -27,17 +27,15 @@ public class SlingshotVisual : MonoBehaviour
     void DrawBand()
     {
         lr.SetPosition(0, leftAnchor.position);
-        lr.SetPosition(1, projectile.position);
         lr.SetPosition(2, rightAnchor.position);
 
         Vector3 jitter = Random.insideUnitSphere * 0.02f;
-
         lr.SetPosition(1, projectile.position + jitter);
     }
 
     public void OnLaunch()
     {
         launched = true;
-        lr.enabled = false; // резинка «отпустилась»
+        lr.enabled = false; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     }
 }

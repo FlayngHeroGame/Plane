@@ -4,58 +4,56 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlaneLaunch : MonoBehaviour
 {
-    public Transform slingOrigin;   // ����� ��������� �������
+    public Transform slingOrigin;   // Точка крепления рогатки
     public float launchPower = 20f;
 
     Rigidbody rb;
 
-    bool isDragging = false;
-    bool launched = false;
+    enum LaunchState { Ready, Pulling, Flying }
+    LaunchState state = LaunchState.Ready;
 
-    public float maxAngle = 45f; // �������� ���������� � ��������
-    public float minPull = 2f;   // ����������� ����
-    public float maxPull = 10f;  // ������������ ����
+    public float maxAngle = 45f; // Половина допустимого конуса в градусах
+    public float minPull = 2f;   // Минимальная тяга
+    public float maxPull = 10f;  // Максимальная тяга
 
     Vector3 pullVector;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true; // ���� �� �������
+        rb.isKinematic = true; // Пока не запущен
     }
 
     void Update()
     {
-        if (!isDragging && rb.isKinematic)
-        {
-            if (Input.GetMouseButtonDown(0))
-                isDragging = true;
-        }
-
-#if UNITY_EDITOR
-        if (Input.GetMouseButtonDown(0)) StartDrag();
-        if (Input.GetMouseButton(0)) Drag(Input.mousePosition);
-        if (Input.GetMouseButtonUp(0)) Release();
-#else
+        // Универсальная обработка ввода для мобильных и десктопа
+        // Приоритет тачу, если есть активные касания
         if (Input.touchCount > 0)
         {
             var t = Input.GetTouch(0);
-
+            
             if (t.phase == TouchPhase.Began) StartDrag();
             if (t.phase == TouchPhase.Moved) Drag(t.position);
             if (t.phase == TouchPhase.Ended) Release();
         }
-#endif
+        else
+        {
+            // Fallback на мышь для десктопа или когда нет касаний
+            if (Input.GetMouseButtonDown(0)) StartDrag();
+            if (Input.GetMouseButton(0)) Drag(Input.mousePosition);
+            if (Input.GetMouseButtonUp(0)) Release();
+        }
     }
 
     void StartDrag()
     {
-        isDragging = true;
+        if (state != LaunchState.Ready) return;
+        state = LaunchState.Pulling;
     }
 
     void Drag(Vector2 screenPos)
     {
-        if (!isDragging) return;
+        if (state != LaunchState.Pulling) return;
 
         Ray ray = Camera.main.ScreenPointToRay(screenPos);
         Plane plane = new Plane(Vector3.up, slingOrigin.position);
@@ -64,77 +62,49 @@ public class PlaneLaunch : MonoBehaviour
         {
             Vector3 point = ray.GetPoint(dist);
 
-            /*pullVector = slingOrigin.position - point;
-            pullVector = Vector3.ClampMagnitude(pullVector, maxPull);
-
-            transform.position = slingOrigin.position - pullVector;
-            transform.forward = pullVector.normalized;*/
             pullVector = slingOrigin.position - point;
 
-            // ������� ������������ �����
+            // Ограничение максимальной силы
             pullVector = Vector3.ClampMagnitude(pullVector, maxPull);
 
-            // ����� ������������ ����
+            // Ограничение направления углом
             pullVector = ClampDirection(pullVector.normalized) * pullVector.magnitude;
-
-            float pullLength = pullVector.magnitude;
-
-            // ������������ ��������
-            pullLength = Mathf.Min(pullLength, maxPull);
-
-            // ������������ ������
-            pullVector = pullVector.normalized * pullLength;
-
 
             transform.position = slingOrigin.position - pullVector;
             transform.forward = pullVector.normalized;
-
         }
-
-
     }
 
     void Release()
     {
-        if (!isDragging) return;
-
-        isDragging = false;
-        launched = true;
+        if (state != LaunchState.Pulling) return;
 
         float pullLength = pullVector.magnitude;
 
-        // ���� �������� ������� ����� � �������� �������
+        // Если натяжение слишком слабое, возврат в начальное состояние
         if (pullLength < minPull)
         {
             ResetToStart();
-
             transform.position = slingOrigin.position;
             pullVector = Vector3.zero;
             return;
         }
 
+        // Переход в состояние полёта только после успешной проверки
+        state = LaunchState.Flying;
+
         float normalized = Mathf.InverseLerp(minPull, maxPull, pullLength);
-        float force = launchPower * normalized;
+        float force = launchPower * normalized * UpgradeSystem.Instance.SlingPower;
 
         rb.isKinematic = false;
-        //rb.AddForce(pullVector * launchPower, ForceMode.Impulse);
         rb.AddForce(pullVector.normalized * force, ForceMode.Impulse);
 
         FindObjectOfType<SlingshotVisual>().OnLaunch();
-
-        // Включить камеру следования
-        var cam = FindObjectOfType<FollowCamera>();
-        if (cam != null) cam.StartFollowing();
-
-        // Включить управление в полёте
-        var fc = FindObjectOfType<FlightControl>();
-        if (fc != null) fc.EnableControl();
-
     }
 
     Vector3 ClampDirection(Vector3 dir)
     {
-        Vector3 baseDir = slingOrigin.forward; // ������ �� �������
+        Vector3 baseDir = -slingOrigin.forward; // Вектор назад от рогатки (инвертирован)
 
         float angle = Vector3.Angle(baseDir, dir);
 
@@ -157,8 +127,6 @@ public class PlaneLaunch : MonoBehaviour
 
         rb.isKinematic = true;
 
-        isDragging = false;
+        state = LaunchState.Ready;
     }
-
-
 }

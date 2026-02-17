@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class CrashHandler : MonoBehaviour
 {
@@ -15,12 +16,16 @@ public class CrashHandler : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
     }
+    bool crashed = false;
+    float crashTime;
 
     void OnCollisionEnter(Collision col)
     {
         if (crashed) return;
         crashed = true;
 
+   
+        crashTime = Time.unscaledTime;
         Instantiate(explosion, transform.position, Quaternion.identity);
 
         // Отключить управление в полёте
@@ -60,4 +65,22 @@ public class CrashHandler : MonoBehaviour
             rewardScreen.Show();
         }
     }
+
+    void Update()
+    {
+        if (!crashed) return;
+
+        // Перезагрузка сцены через 3 секунды (unscaled time) или при нажатии пробела/ЛКМ
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || (Time.unscaledTime - crashTime >= 3f))
+        {
+            RestartScene();
+        }
+    }
+
+    void RestartScene()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }
+
