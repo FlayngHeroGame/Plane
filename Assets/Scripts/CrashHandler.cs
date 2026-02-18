@@ -28,6 +28,7 @@ public class CrashHandler : MonoBehaviour
     bool crashed = false;
     bool stopped = false;
     bool wasInAir = false;      // Был ли самолёт в воздухе (после трамплина)
+    float launchTime;           // Время запуска самолёта
     
     void Start()
     {
@@ -40,21 +41,32 @@ public class CrashHandler : MonoBehaviour
     public void OnLaunched()
     {
         launched = true;
+        launchTime = Time.time;
     }
     
     void FixedUpdate()
     {
-        if (!launched || crashed) return;
+        if (!launched || stopped) return;
+        
+        // Защитная задержка — не проверять остановку первые 3 секунды после запуска
+        if (Time.time - launchTime < 3f) 
+        {
+            // Но продолжаем проверять wasInAir
+            bool groundedEarly = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
+            if (!groundedEarly)
+                wasInAir = true;
+            return;
+        }
         
         // Проверяем: самолёт в воздухе?
-        // Raycast вниз короткий — если НЕТ земли, значит летим
         bool grounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
         
         if (!grounded)
             wasInAir = true;
         
-        // Проверяем остановку (только после запуска)
-        if (!stopped && rb.linearVelocity.magnitude < stopSpeedThreshold)
+        // Проверяем остановку: только если уже был в воздухе И скорость стала маленькой
+        // (не crashed — crashed обрабатывает HardCrash отдельно)
+        if (!crashed && wasInAir && rb.linearVelocity.magnitude < stopSpeedThreshold)
         {
             stopped = true;
             StartCoroutine(StopSequence());

@@ -70,7 +70,17 @@ public class PlaneLaunch : MonoBehaviour
             pullVector = Vector3.ClampMagnitude(pullVector, maxPull);
 
             // Ограничение направления углом
-            pullVector = ClampDirection(pullVector.normalized) * pullVector.magnitude;
+            Vector3 clampedDir = ClampDirection(pullVector.normalized);
+            
+            // Если направление запрещено (вперёд) — самолёт стоит на месте
+            if (clampedDir == Vector3.zero)
+            {
+                pullVector = Vector3.zero;
+                transform.position = slingOrigin.position;
+                return;
+            }
+            
+            pullVector = clampedDir * pullVector.magnitude;
 
             // Если результирующий вектор слишком мал (натяжение вперёд), самолёт остаётся на месте
             if (pullVector.magnitude < MIN_PULL_MAGNITUDE)
@@ -133,9 +143,9 @@ public class PlaneLaunch : MonoBehaviour
         if (angle <= maxAngle)
             return dir;
 
-        // Натяжение вперёд (больше 90°) — полностью запрещаем
+        // Натяжение вперёд (больше 90°) — полностью запрещаем, возвращаем ноль
         if (angle > 90f)
-            return baseDir;
+            return Vector3.zero;
 
         // Между maxAngle и 90° — корректируем к границе конуса
         float t = maxAngle / angle;
