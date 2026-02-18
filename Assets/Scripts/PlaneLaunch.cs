@@ -16,6 +16,8 @@ public class PlaneLaunch : MonoBehaviour
     public float minPull = 2f;   // Минимальная тяга
     public float maxPull = 10f;  // Максимальная тяга
 
+    const float MIN_PULL_MAGNITUDE = 0.01f; // Минимальная величина вектора тяги для обновления позиции
+
     Vector3 pullVector;
 
     void Start()
@@ -70,6 +72,13 @@ public class PlaneLaunch : MonoBehaviour
             // Ограничение направления углом
             pullVector = ClampDirection(pullVector.normalized) * pullVector.magnitude;
 
+            // Если результирующий вектор слишком мал (натяжение вперёд), самолёт остаётся на месте
+            if (pullVector.magnitude < MIN_PULL_MAGNITUDE)
+            {
+                transform.position = slingOrigin.position;
+                return;
+            }
+
             transform.position = slingOrigin.position - pullVector;
             transform.forward = pullVector.normalized;
         }
@@ -108,9 +117,15 @@ public class PlaneLaunch : MonoBehaviour
 
         float angle = Vector3.Angle(baseDir, dir);
 
+        // Внутри допустимого конуса — пропускаем
         if (angle <= maxAngle)
             return dir;
 
+        // Натяжение вперёд (больше 90°) — полностью запрещаем
+        if (angle > 90f)
+            return baseDir;
+
+        // Между maxAngle и 90° — корректируем к границе конуса
         float t = maxAngle / angle;
         return Vector3.Slerp(baseDir, dir, t);
     }
