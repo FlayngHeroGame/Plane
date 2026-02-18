@@ -46,14 +46,14 @@ public class CrashHandler : MonoBehaviour
     
     void FixedUpdate()
     {
-        if (!launched || stopped) return;
+        if (!launched || stopped || crashed) return;
         
         // Защитная задержка — не проверять остановку первые 3 секунды после запуска
         if (Time.time - launchTime < 3f) 
         {
             // Но продолжаем проверять wasInAir
-            bool groundedEarly = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
-            if (!groundedEarly)
+            bool isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
+            if (!isGrounded)
                 wasInAir = true;
             return;
         }
@@ -65,8 +65,7 @@ public class CrashHandler : MonoBehaviour
             wasInAir = true;
         
         // Проверяем остановку: только если уже был в воздухе И скорость стала маленькой
-        // (не crashed — crashed обрабатывает HardCrash отдельно)
-        if (!crashed && wasInAir && rb.linearVelocity.magnitude < stopSpeedThreshold)
+        if (wasInAir && rb.linearVelocity.magnitude < stopSpeedThreshold)
         {
             stopped = true;
             StartCoroutine(StopSequence());
