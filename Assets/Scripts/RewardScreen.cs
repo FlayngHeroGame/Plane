@@ -29,9 +29,9 @@ public class RewardScreen : MonoBehaviour
         float multiplier = UpgradeSystem.Instance != null ? UpgradeSystem.Instance.MoneyMultiplier : 1f;
         currentReward = distance * multiplier;
 
-        if (distanceText != null) distanceText.text = $"Расстояние: {distance:F1} м";
-        if (multiplierText != null) multiplierText.text = $"Множитель: x{multiplier:F1}";
-        if (rewardText != null) rewardText.text = $"Награда: {currentReward:F0} монет";
+        if (distanceText != null) distanceText.text = distance.ToString();
+        if (multiplierText != null) multiplierText.text = multiplier.ToString();
+        if (rewardText != null) rewardText.text = currentReward.ToString();
 
         if (panel != null) panel.SetActive(true);
         Time.timeScale = 0f;

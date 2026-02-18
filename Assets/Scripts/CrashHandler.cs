@@ -66,21 +66,5 @@ public class CrashHandler : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (!crashed) return;
-
-        // Перезагрузка сцены через 3 секунды (unscaled time) или при нажатии пробела/ЛКМ
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || (Time.unscaledTime - crashTime >= 3f))
-        {
-            RestartScene();
-        }
-    }
-
-    void RestartScene()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
 }
 
