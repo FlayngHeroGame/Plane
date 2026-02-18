@@ -16,6 +16,8 @@ public class PlaneLaunch : MonoBehaviour
     public float minPull = 2f;   // Минимальная тяга
     public float maxPull = 10f;  // Максимальная тяга
 
+    const float MIN_PULL_MAGNITUDE = 0.01f; // Минимальная величина вектора тяги для обновления позиции
+
     Vector3 pullVector;
 
     void Start()
@@ -71,7 +73,7 @@ public class PlaneLaunch : MonoBehaviour
             pullVector = ClampDirection(pullVector.normalized) * pullVector.magnitude;
 
             // Если результирующий вектор слишком мал (натяжение вперёд), самолёт остаётся на месте
-            if (pullVector.magnitude < 0.01f)
+            if (pullVector.magnitude < MIN_PULL_MAGNITUDE)
             {
                 transform.position = slingOrigin.position;
                 return;
