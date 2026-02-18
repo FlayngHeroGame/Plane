@@ -71,8 +71,9 @@ public class CrashHandler : MonoBehaviour
         // Самолёт был в воздухе и коснулся чего-то — проверяем тип приземления
         float verticalSpeed = Mathf.Abs(rb.linearVelocity.y);
         
-        // Угол наклона носа (pitch) — используем локальную ось вперёд относительно мировой вертикали
-        float angle = Vector3.Angle(transform.forward, new Vector3(transform.forward.x, 0, transform.forward.z).normalized);
+        // Угол наклона носа (pitch) — вычисляем угол между forward вектором и горизонталью
+        // Используем угол от Vector3.up и вычитаем 90 градусов чтобы получить pitch
+        float angle = Mathf.Abs(Vector3.Angle(transform.forward, Vector3.up) - 90f);
         
         // Жёсткое приземление?
         if (verticalSpeed > hardLandingSpeed || angle > hardLandingAngle)
@@ -143,7 +144,7 @@ public class CrashHandler : MonoBehaviour
         // Ждём 1 секунду, потом спавним столбик
         yield return new WaitForSeconds(1f);
         
-        Vector3 markerPos = transform.position + Vector3.forward * markerOffsetForward;
+        Vector3 markerPos = transform.position + transform.forward * markerOffsetForward;
         if (distanceMarkerPrefab != null)
             Instantiate(distanceMarkerPrefab, markerPos, Quaternion.identity);
         
