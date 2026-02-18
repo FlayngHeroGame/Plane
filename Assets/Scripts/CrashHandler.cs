@@ -13,6 +13,7 @@ public class CrashHandler : MonoBehaviour
     public float hardLandingAngle = 45f;       // Угол наклона для жёсткого приземления
     public float stopSpeedThreshold = 0.5f;    // Скорость при которой считаем что остановился
     public float markerOffsetForward = 2f;
+    public float groundCheckDistance = 1.5f;   // Дистанция рейкаста для проверки земли
     
     [Header("Детали самолёта (для разлёта при крушении)")]
     public GameObject[] planeParts;            // Корпус, крылья, винт, хвост — дочерние объекты
@@ -47,7 +48,7 @@ public class CrashHandler : MonoBehaviour
         
         // Проверяем: самолёт в воздухе?
         // Raycast вниз короткий — если НЕТ земли, значит летим
-        bool grounded = Physics.Raycast(transform.position, Vector3.down, 1.5f);
+        bool grounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
         
         if (!grounded)
             wasInAir = true;
@@ -69,7 +70,9 @@ public class CrashHandler : MonoBehaviour
         
         // Самолёт был в воздухе и коснулся чего-то — проверяем тип приземления
         float verticalSpeed = Mathf.Abs(rb.linearVelocity.y);
-        float angle = Vector3.Angle(transform.forward, Vector3.forward); // Угол наклона носа
+        
+        // Угол наклона носа (pitch) — используем локальную ось вперёд относительно мировой вертикали
+        float angle = Vector3.Angle(transform.forward, new Vector3(transform.forward.x, 0, transform.forward.z).normalized);
         
         // Жёсткое приземление?
         if (verticalSpeed > hardLandingSpeed || angle > hardLandingAngle)
