@@ -109,6 +109,18 @@ public class PlaneLaunch : MonoBehaviour
         rb.AddForce(pullVector.normalized * force, ForceMode.Impulse);
 
         FindObjectOfType<SlingshotVisual>().OnLaunch();
+        
+        // Сообщить CrashHandler что самолёт запущен
+        var ch = GetComponent<CrashHandler>();
+        if (ch != null) ch.OnLaunched();
+
+        // Включить камеру следования
+        var cam = FindObjectOfType<FollowCamera>();
+        if (cam != null) cam.StartFollowing();
+
+        // Включить управление в полёте
+        var fc = FindObjectOfType<FlightControl>();
+        if (fc != null) fc.EnableControl();
     }
 
     Vector3 ClampDirection(Vector3 dir)
