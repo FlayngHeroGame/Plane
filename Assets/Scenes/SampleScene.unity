@@ -219,7 +219,7 @@ Transform:
   m_GameObject: {fileID: 37484781}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2237,13 +2237,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.79, z: -7.85}
+  m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
+  m_LocalPosition: {x: 0, y: 2.79, z: -5.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2302,12 +2302,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowCamera
   target: {fileID: 5405127759804603178}
   targetRb: {fileID: 5405127759804603183}
-  minDistance: 5
-  maxDistance: 15
-  minSpeed: 0
+  minDistance: 2
+  maxDistance: 7
+  minSpeed: 5
   maxSpeed: 50
-  smoothSpeed: 5
-  heightOffset: 3
+  heightOffset: 1
+  positionSmoothTime: 0.2
+  rotationSmoothSpeed: 3
+  distanceSmoothTime: 0.3
 --- !u!1 &335239256
 GameObject:
   m_ObjectHideFlags: 0
@@ -5229,16 +5231,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 393974046}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.00765
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.25162
+      value: -0.37
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.004850149
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5246,7 +5260,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalRotation.y
@@ -5254,7 +5268,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 04e0ed17284dd7d45a5d64d69d3a9885, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5296,7 +5310,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 952326233}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 467a174d09ce4f945bfa7d8412304d18, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -5686,6 +5700,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlanePhysics
   drag: 0.02
   lift: 0.5
+  groundCheckDistance: 1.5
+  groundAlignSpeed: 5
 --- !u!114 &1007223334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9806,7 +9822,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 722786374402707026, guid: c5f8a08a70facbe44943dd5d7dfc2c40, type: 3}
       propertyPath: m_LocalScale.x
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 722786374402707026, guid: c5f8a08a70facbe44943dd5d7dfc2c40, type: 3}
       propertyPath: m_LocalScale.y
@@ -9814,7 +9830,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 722786374402707026, guid: c5f8a08a70facbe44943dd5d7dfc2c40, type: 3}
       propertyPath: m_LocalScale.z
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 722786374402707026, guid: c5f8a08a70facbe44943dd5d7dfc2c40, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10104,7 +10120,7 @@ Transform:
   m_GameObject: {fileID: 1897187998}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0, z: 12.83}
+  m_LocalPosition: {x: 0, y: -0, z: 29.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12141,6 +12157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DistanceReward
   startPoint: {fileID: 0}
+  forwardReference: {fileID: 0}
   distance: 0
   coins: 0
 --- !u!114 &3394315030020794306
@@ -12155,10 +12172,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e8906ade43c5b4b889c8eb3a5f5571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrashHandler
-  explosion: {fileID: 0}
+  explosionPrefab: {fileID: 0}
   distanceMarkerPrefab: {fileID: 0}
-  markerSpawnDelay: 1
+  hardLandingSpeed: 10
+  hardLandingAngle: 45
+  stopSpeedThreshold: 0.5
   markerOffsetForward: 2
+  groundCheckDistance: 1.5
+  planeParts: []
+  partExplosionForce: 300
+  partExplosionRadius: 5
+  planeVisual: {fileID: 0}
 --- !u!33 &3668316557716653983
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -12326,12 +12350,12 @@ Transform:
   m_GameObject: {fileID: 4632250887743586704}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.12, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 680930852122479577}
   - {fileID: 4682011676041956784}
+  - {fileID: 680930852122479577}
   - {fileID: 5772293695757366429}
   - {fileID: 780924893669777536}
   - {fileID: 6456956709234565979}
@@ -12350,6 +12374,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DistanceReward
   startPoint: {fileID: 984835266}
+  forwardReference: {fileID: 0}
   distance: 0
   coins: 0
 --- !u!114 &5405127759804603180
@@ -12364,10 +12389,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e8906ade43c5b4b889c8eb3a5f5571, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CrashHandler
-  explosion: {fileID: 1257899049973296, guid: f569d19cf52ef304b82b58d4c05d9080, type: 3}
+  explosionPrefab: {fileID: 0}
   distanceMarkerPrefab: {fileID: 3832081541039672309, guid: 4c2c4139ab751f14cae1e9484be75213, type: 3}
-  markerSpawnDelay: 1
+  hardLandingSpeed: 10
+  hardLandingAngle: 45
+  stopSpeedThreshold: 0.5
   markerOffsetForward: 2
+  groundCheckDistance: 1
+  planeParts: []
+  partExplosionForce: 300
+  partExplosionRadius: 5
+  planeVisual: {fileID: 0}
 --- !u!114 &5405127759804603181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12382,6 +12414,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlanePhysics
   drag: 0.02
   lift: 0.5
+  groundCheckDistance: 1
+  groundAlignSpeed: 5
 --- !u!114 &5405127759804603182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12395,7 +12429,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlaneLaunch
   slingOrigin: {fileID: 984835266}
-  launchPower: 10
+  launchPower: 15
   maxAngle: 45
   minPull: 0.5
   maxPull: 2.5
