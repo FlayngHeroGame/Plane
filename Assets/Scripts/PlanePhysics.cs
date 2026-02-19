@@ -20,29 +20,36 @@ public class PlanePhysics : MonoBehaviour
         
         Vector3 v = rb.linearVelocity;
         
-        // Сопротивление воздуха (всегда)
-        rb.AddForce(-v * drag, ForceMode.Acceleration);
-        
         // Проверка: самолёт на земле или в воздухе
         bool grounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
         
-        // Подъёмная сила — ТОЛЬКО в воздухе
+        // Вся аэродинамика — ТОЛЬКО в воздухе
+        // На земле: физика Unity сама управляет трением и ориентацией
+        // Это позволяет самолёту нормально катиться по земле и заезжать на трамплин
         if (!grounded)
         {
+            // Сопротивление воздуха — только в воздухе
+            // На земле уже есть естественное трение поверхности, двойное замедление не нужно
+            rb.AddForce(-v * drag, ForceMode.Acceleration);
+            
+            // Подъёмная сила
             float forwardSpeed = Vector3.Dot(v, transform.forward);
             if (forwardSpeed > 0)
             {
                 Vector3 liftForce = transform.up * forwardSpeed * lift * UpgradeSystem.Instance.LiftBonus;
                 rb.AddForce(liftForce, ForceMode.Acceleration);
             }
+            
+            // Ориентация по вектору скорости — только в воздухе
+            // На земле физика сама управляет ориентацией для заезда на трамплин
+            if (v.sqrMagnitude > 0.01f)
+            {
+                rb.MoveRotation(
+                    Quaternion.Lerp(
+                        transform.rotation,
+                        Quaternion.LookRotation(v),
+                        Time.fixedDeltaTime * 2f));
+            }
         }
-        
-        // Ориентация по вектору скорости (всегда, но мягче на земле)
-        float rotationSpeed = grounded ? 1f : 2f;
-        rb.MoveRotation(
-            Quaternion.Lerp(
-                transform.rotation,
-                Quaternion.LookRotation(v),
-                Time.fixedDeltaTime * rotationSpeed));
     }
 }
