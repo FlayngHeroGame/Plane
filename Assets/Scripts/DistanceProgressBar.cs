@@ -14,13 +14,20 @@ public class DistanceProgressBar : MonoBehaviour
     {
         if (startPoint == null || endPoint == null || plane == null || progressSlider == null) return;
 
-        float totalDistance = Vector3.Distance(startPoint.position, endPoint.position);
+        Vector3 startToEnd = endPoint.position - startPoint.position;
+        float totalDistance = startToEnd.magnitude;
         if (totalDistance < 0.01f) return;
 
-        float currentDistance = Vector3.Distance(startPoint.position, plane.position);
-        progressSlider.value = Mathf.Clamp01(currentDistance / totalDistance);
+        // Direction "forward" from start to finish
+        Vector3 forwardDir = startToEnd / totalDistance;
+
+        // Project the plane's position onto the forward axis.
+        // Negative values (behind the start) are clamped to zero.
+        float forwardDistance = Mathf.Max(0f, Vector3.Dot(plane.position - startPoint.position, forwardDir));
+
+        progressSlider.value = Mathf.Clamp01(forwardDistance / totalDistance);
 
         if (distanceLabel != null)
-            distanceLabel.text = $"{currentDistance:F0} м";
+            distanceLabel.text = $"{forwardDistance:F0} м";
     }
 }
