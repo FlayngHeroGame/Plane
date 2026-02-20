@@ -789,10 +789,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlightControl
   joystick: {fileID: 1598760775}
   planeRb: {fileID: 5405127759804603183}
-  pitchSpeed: 10
-  yawSpeed: 10
-  maxAngularSpeed: 1.5
+  pitchSpeed: 20
+  rollSpeed: 3
+  autoYawFromRoll: 3
+  maxAngularSpeed: 1
   angularDamping: 3
+  rollReturnSpeed: 2
 --- !u!114 &128795170
 MonoBehaviour:
   m_ObjectHideFlags: 0
