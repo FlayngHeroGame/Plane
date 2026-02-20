@@ -12,7 +12,7 @@ public class RewardScreen : MonoBehaviour
     public Button claimButton;
     public Button doubleClaimButton;
 
-    float currentReward;
+    int currentRewardCoins;
 
     void Start()
     {
@@ -26,12 +26,14 @@ public class RewardScreen : MonoBehaviour
     {
         var dr = FindObjectOfType<DistanceReward>();
         float distance = dr != null ? dr.distance : 0f;
+        int coins = dr != null ? dr.coins : 0;
         float multiplier = UpgradeSystem.Instance != null ? UpgradeSystem.Instance.MoneyMultiplier : 1f;
-        currentReward = distance * multiplier;
 
-        if (distanceText != null) distanceText.text = distance.ToString();
-        if (multiplierText != null) multiplierText.text = multiplier.ToString();
-        if (rewardText != null) rewardText.text = currentReward.ToString();
+        currentRewardCoins = coins;
+
+        if (distanceText != null) distanceText.text = $"{distance:F0}м";
+        if (multiplierText != null) multiplierText.text = $"x{multiplier:F1}";
+        if (rewardText != null) rewardText.text = currentRewardCoins.ToString();
 
         if (panel != null) panel.SetActive(true);
         Time.timeScale = 0f;
@@ -39,13 +41,18 @@ public class RewardScreen : MonoBehaviour
 
     void ClaimReward()
     {
+        if (CoinManager.Instance != null)
+            CoinManager.Instance.AddCoins(currentRewardCoins);
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void DoubleClaimReward()
     {
-        currentReward *= 2f;
+        if (CoinManager.Instance != null)
+            CoinManager.Instance.AddCoins(currentRewardCoins * 2);
+
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
