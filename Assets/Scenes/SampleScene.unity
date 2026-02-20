@@ -789,8 +789,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FlightControl
   joystick: {fileID: 1598760775}
   planeRb: {fileID: 5405127759804603183}
-  pitchSpeed: 50
-  yawSpeed: 50
+  pitchSpeed: 10
+  yawSpeed: 10
+  maxAngularSpeed: 1.5
+  angularDamping: 3
 --- !u!114 &128795170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2302,13 +2304,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FollowCamera
   target: {fileID: 5405127759804603178}
   targetRb: {fileID: 5405127759804603183}
+  trackStart: {fileID: 0}
+  trackEnd: {fileID: 0}
   minDistance: 2
   maxDistance: 7
   minSpeed: 5
   maxSpeed: 50
   heightOffset: 1
   positionSmoothTime: 0.2
-  rotationSmoothSpeed: 3
   distanceSmoothTime: 0.3
 --- !u!1 &335239256
 GameObject:
@@ -5700,6 +5703,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlanePhysics
   drag: 0.02
   lift: 0.5
+  velocityAlignment: 3
+  inducedDrag: 0.5
+  gravityCompensation: 0.3
   groundCheckDistance: 1.5
   groundAlignSpeed: 5
 --- !u!114 &1007223334
@@ -12414,6 +12420,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlanePhysics
   drag: 0.02
   lift: 0.5
+  velocityAlignment: 3
+  inducedDrag: 0.5
+  gravityCompensation: 0.3
   groundCheckDistance: 1
   groundAlignSpeed: 5
 --- !u!114 &5405127759804603182

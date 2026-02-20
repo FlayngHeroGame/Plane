@@ -6,8 +6,8 @@ public class FlightControl : MonoBehaviour
     public Rigidbody planeRb;
 
     [Header("Скорость поворота")]
-    public float pitchSpeed = 15f;          // Было 50 — слишком быстро
-    public float yawSpeed = 15f;            // Было 50 — слишком быстро
+    public float pitchSpeed = 10f;          // Было 50 — слишком быстро
+    public float yawSpeed = 10f;            // Было 50 — слишком быстро
 
     [Header("Ограничения")]
     public float maxAngularSpeed = 1.5f;    // Макс. угловая скорость (рад/с) — не даёт раскрутиться
